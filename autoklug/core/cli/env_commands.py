@@ -26,18 +26,37 @@ def env_commands():
 def save(tool, env, name):
     """💾 Save environment to AWS Secrets Manager"""
     
-    # Validate files exist if explicitly provided
-    if tool and not Path(tool).exists():
-        echo(style(f"❌ Tool file not found: {tool}", fg='red'))
-        sys.exit(1)
-    
-    if env and not Path(env).exists():
-        echo(style(f"❌ Env file not found: {env}", fg='red'))
-        sys.exit(1)
-    
     async def run_save():
         try:
             from ...core.builders import BlazingFastBuilder
+            from ...utils import detect_project_context, find_best_config_files
+            
+            # Detect project context if not provided
+            if not tool or not env:
+                context = detect_project_context()
+                detected_tool, detected_env = find_best_config_files(context)
+                tool = tool or detected_tool
+                env = env or detected_env
+                
+                if not tool:
+                    echo(style("❌ No .tool file found! Create one to configure your build.", fg='red'))
+                    echo(style("💡 Run 'autoklug template init' to create a configuration template.", fg='yellow'))
+                    sys.exit(1)
+                
+                if not env:
+                    echo(style("❌ No .env file found! Create one with your environment variables.", fg='red'))
+                    echo(style("💡 Create a .env file in your project root with your environment variables.", fg='yellow'))
+                    sys.exit(1)
+            
+            # Validate both files exist
+            if not Path(tool).exists():
+                echo(style(f"❌ Tool file not found: {tool}", fg='red'))
+                sys.exit(1)
+            
+            if not Path(env).exists():
+                echo(style(f"❌ Env file not found: {env}", fg='red'))
+                sys.exit(1)
+            
             builder = BlazingFastBuilder(tool, env)
             
             log_header("SAVING ENVIRONMENT")
@@ -58,14 +77,43 @@ def save(tool, env, name):
 
 @env_commands.command()
 @click.option('--tool', '-t', help='Path to .tool configuration file')
+@click.option('--env', '-e', help='Path to .env file for environment variables')
 @click.option('--name', '-n', help='Environment name to load')
-def load(tool, name):
+def load(tool, env, name):
     """📥 Load environment from AWS Secrets Manager"""
     
     async def run_load():
         try:
             from ...core.builders import BlazingFastBuilder
-            builder = BlazingFastBuilder(tool)
+            from ...utils import detect_project_context, find_best_config_files
+            
+            # Detect project context if not provided
+            if not tool or not env:
+                context = detect_project_context()
+                detected_tool, detected_env = find_best_config_files(context)
+                tool = tool or detected_tool
+                env = env or detected_env
+                
+                if not tool:
+                    echo(style("❌ No .tool file found! Create one to configure your build.", fg='red'))
+                    echo(style("💡 Run 'autoklug template init' to create a configuration template.", fg='yellow'))
+                    sys.exit(1)
+                
+                if not env:
+                    echo(style("❌ No .env file found! Create one with your environment variables.", fg='red'))
+                    echo(style("💡 Create a .env file in your project root with your environment variables.", fg='yellow'))
+                    sys.exit(1)
+            
+            # Validate both files exist
+            if not Path(tool).exists():
+                echo(style(f"❌ Tool file not found: {tool}", fg='red'))
+                sys.exit(1)
+            
+            if not Path(env).exists():
+                echo(style(f"❌ Env file not found: {env}", fg='red'))
+                sys.exit(1)
+            
+            builder = BlazingFastBuilder(tool, env)
             
             log_header("LOADING ENVIRONMENT")
             success = await load_env(builder.config, name)
@@ -85,13 +133,42 @@ def load(tool, name):
 
 @env_commands.command()
 @click.option('--tool', '-t', help='Path to .tool configuration file')
-def list(tool):
+@click.option('--env', '-e', help='Path to .env file for environment variables')
+def list(tool, env):
     """📋 List available environments"""
     
     async def run_list():
         try:
             from ...core.builders import BlazingFastBuilder
-            builder = BlazingFastBuilder(tool)
+            from ...utils import detect_project_context, find_best_config_files
+            
+            # Detect project context if not provided
+            if not tool or not env:
+                context = detect_project_context()
+                detected_tool, detected_env = find_best_config_files(context)
+                tool = tool or detected_tool
+                env = env or detected_env
+                
+                if not tool:
+                    echo(style("❌ No .tool file found! Create one to configure your build.", fg='red'))
+                    echo(style("💡 Run 'autoklug template init' to create a configuration template.", fg='yellow'))
+                    sys.exit(1)
+                
+                if not env:
+                    echo(style("❌ No .env file found! Create one with your environment variables.", fg='red'))
+                    echo(style("💡 Create a .env file in your project root with your environment variables.", fg='yellow'))
+                    sys.exit(1)
+            
+            # Validate both files exist
+            if not Path(tool).exists():
+                echo(style(f"❌ Tool file not found: {tool}", fg='red'))
+                sys.exit(1)
+            
+            if not Path(env).exists():
+                echo(style(f"❌ Env file not found: {env}", fg='red'))
+                sys.exit(1)
+            
+            builder = BlazingFastBuilder(tool, env)
             
             log_header("AVAILABLE ENVIRONMENTS")
             await list_envs(builder.config)
@@ -105,14 +182,43 @@ def list(tool):
 
 @env_commands.command()
 @click.option('--tool', '-t', help='Path to .tool configuration file')
+@click.option('--env', '-e', help='Path to .env file for environment variables')
 @click.option('--name', '-n', help='Environment name to delete')
-def delete(tool, name):
+def delete(tool, env, name):
     """🗑️ Delete environment from AWS Secrets Manager"""
     
     async def run_delete():
         try:
             from ...core.builders import BlazingFastBuilder
-            builder = BlazingFastBuilder(tool)
+            from ...utils import detect_project_context, find_best_config_files
+            
+            # Detect project context if not provided
+            if not tool or not env:
+                context = detect_project_context()
+                detected_tool, detected_env = find_best_config_files(context)
+                tool = tool or detected_tool
+                env = env or detected_env
+                
+                if not tool:
+                    echo(style("❌ No .tool file found! Create one to configure your build.", fg='red'))
+                    echo(style("💡 Run 'autoklug template init' to create a configuration template.", fg='yellow'))
+                    sys.exit(1)
+                
+                if not env:
+                    echo(style("❌ No .env file found! Create one with your environment variables.", fg='red'))
+                    echo(style("💡 Create a .env file in your project root with your environment variables.", fg='yellow'))
+                    sys.exit(1)
+            
+            # Validate both files exist
+            if not Path(tool).exists():
+                echo(style(f"❌ Tool file not found: {tool}", fg='red'))
+                sys.exit(1)
+            
+            if not Path(env).exists():
+                echo(style(f"❌ Env file not found: {env}", fg='red'))
+                sys.exit(1)
+            
+            builder = BlazingFastBuilder(tool, env)
             
             log_header("DELETING ENVIRONMENT")
             success = await delete_env(builder.config, name)
